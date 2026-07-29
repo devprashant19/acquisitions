@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env.production
+    # In production, we don't use volumes for code mounting,
+    # and the default CMD from Dockerfile ("node src/index.js") will be executed automatically.
+    restart: always

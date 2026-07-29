@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env.development
+    volumes:
+      - .:/app
+      - /app/node_modules
+    # Run the dev script for hot-reloading
+    command: npm run dev
+    depends_on:
+      - neon-local
+
+  neon-local:
+    # Official Neon Local Docker Image
+    image: neondatabase/neon:latest
+    ports:
+      - "5432:5432" # Postgres proxy endpoint
+      - "5433:5433" # Neon HTTP API (for creating ephemeral branches)
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=postgres
