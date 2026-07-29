@@ -1,0 +1,58 @@
+name: Run Tests
+
+on:
+  push:
+    branches:
+      - main
+      - staging
+  pull_request:
+    branches:
+      - main
+      - staging
+
+jobs:
+  test:
+    name: Execute Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Run Tests with Coverage
+        run: npm test -- --coverage
+        env:
+          NODE_ENV: test
+          NODE_OPTIONS: --experimental-vm-modules
+          DATABASE_URL: postgres://postgres:postgres@localhost:5432/testdb
+          # Mock secrets needed for test environment booting
+          ARCJET_KEY: test_key
+          JWT_SECRET: test_secret
+
+      - name: Annotate test failures
+        if: failure()
+        run: echo "::error title=Tests Failed::One or more tests failed. Check the logs above for the exact test failures."
+
+      - name: Upload Coverage Report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-report
+          path: coverage/
+          retention-days: 30
+
+      - name: Generate GitHub Step Summary
+        if: always()
+        run: |
+          echo "## Test Execution Results 🧪" >> $GITHUB_STEP_SUMMARY
+          echo "Automated test suite has completed." >> $GITHUB_STEP_SUMMARY
+          echo "You can download the \`coverage-report\` artifact from the workflow summary page." >> $GITHUB_STEP_SUMMARY

@@ -9,7 +9,7 @@ import {
   userIdSchema,
   updateUserSchema,
 } from '#validations/users.validation.js';
-import { formatValidationError } from '#utils/format.js';
+import { formatValidationErrors } from '#utils/format.js';
 
 export const fetchAllUsers = async (req, res, next) => {
   try {
@@ -38,7 +38,7 @@ export const fetchUserById = async (req, res, next) => {
     if (!validationResult.success) {
       return res.status(400).json({
         error: 'Validation failed',
-        details: formatValidationError(validationResult.error),
+        details: formatValidationErrors(validationResult.error),
       });
     }
 
@@ -71,7 +71,7 @@ export const updateUserById = async (req, res, next) => {
     if (!idValidationResult.success) {
       return res.status(400).json({
         error: 'Validation failed',
-        details: formatValidationError(idValidationResult.error),
+        details: formatValidationErrors(idValidationResult.error),
       });
     }
 
@@ -81,7 +81,7 @@ export const updateUserById = async (req, res, next) => {
     if (!updateValidationResult.success) {
       return res.status(400).json({
         error: 'Validation failed',
-        details: formatValidationError(updateValidationResult.error),
+        details: formatValidationErrors(updateValidationResult.error),
       });
     }
 
@@ -149,7 +149,7 @@ export const deleteUserById = async (req, res, next) => {
     if (!validationResult.success) {
       return res.status(400).json({
         error: 'Validation failed',
-        details: formatValidationError(validationResult.error),
+        details: formatValidationErrors(validationResult.error),
       });
     }
 
